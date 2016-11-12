@@ -162,7 +162,7 @@ initOimoPhysics = ->
 
 populate = ->
 
-    max = 10
+    max = 20
 
     # reset old
     clearMesh()

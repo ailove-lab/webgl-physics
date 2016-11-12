@@ -156,7 +156,7 @@ initOimoPhysics = function() {
 
 populate = function() {
   var d, h, i, max, phone, results, table, w, x, y, z;
-  max = 10;
+  max = 20;
   clearMesh();
   world.clear();
   bodys = [];
