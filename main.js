@@ -158,7 +158,7 @@ clearMesh = function() {
 };
 
 initOimoPhysics = function() {
-  world = new OIMO.World(1 / 60, 2, 8);
+  world = new OIMO.World(1 / 60, 2, 32);
   return populate();
 };
 
@@ -202,6 +202,7 @@ add_new_card = function() {
     pos: [x, y, z],
     rot: [(rnd() - rnd()) * 15, (rnd() - rnd()) * 45, (rnd() - rnd()) * 15],
     move: true,
+    config: [1, 0.4, 0.0, 1, 0xffffffff],
     world: world
   });
   bodys.push(body);

@@ -164,7 +164,7 @@ initOimoPhysics = ->
     # 1 : BruteForce
     # 2 : Sweep and prune , the default 
     # 3 : dynamic bounding volume tree
-    world = new OIMO.World(1 / 60, 2, 8)
+    world = new OIMO.World(1 / 60, 2, 32)
     populate()
     #setInterval(updateOimoPhysics, 1000/60);
 
@@ -242,6 +242,13 @@ add_new_card = ->
         pos:  [x, y, z]
         rot:  [(rnd()-rnd())*15,(rnd()-rnd())*45,(rnd()-rnd())*15]
         move: true
+        config: [
+            1,         # The density of the shape.
+            0.4,       # The coefficient of friction of the shape.
+            0.0,       # The coefficient of restitution of the shape.
+            1,         # The bits of the collision groups to which the shape belongs.
+            0xffffffff # The bits of the collision groups with which the shape collides.
+        ]
         world: world)
     bodys.push body
 
