@@ -41,7 +41,7 @@ init = ->
     controls = new THREE.OrbitControls(camera, canvas)
     controls.target.set 0, 20, 0
     controls.update()
-    scene = new (THREE.Scene)
+    scene = new THREE.Scene
     
     renderer = new THREE.WebGLRenderer(
         canvas: canvas
@@ -83,21 +83,24 @@ init = ->
         side: THREE.BackSide
         depthWrite: false
         fog: true))
+
     #back.geometry.applyMatrix(new THREE.Matrix4().makeRotationZ(15*ToRad));
     scene.add back
     
     # geometrys
-    geos['box'     ] = (new THREE.BufferGeometry).fromGeometry(new THREE.BoxGeometry(1, 1, 1))
+    geos['box'] = (new THREE.BufferGeometry).fromGeometry(new THREE.BoxGeometry(1, 1, 1))
     
     # materials
     mats['box'] = new (THREE[materialType])(
         shininess: 10
         map: basicTexture(2)
         name: 'box')
+
     mats['sbox'] = new (THREE[materialType])(
         shininess: 10
         map: basicTexture(3)
         name: 'sbox')
+
     mats['ground'] = new (THREE[materialType])(
         shininess: 10
         color: 0x111111
@@ -106,6 +109,8 @@ init = ->
 
     # events
     window.addEventListener 'resize', onWindowResize, false
+    document.addEventListener 'keyup', onKey, false
+
     # physics
     initOimoPhysics()
     return
@@ -122,6 +127,10 @@ onWindowResize = ->
     camera.updateProjectionMatrix()
     renderer.setSize window.innerWidth, window.innerHeight
 
+onKey = (e)->
+    console.log e.key
+    if e.key is " "
+        add_new_card()
 
 addStaticBox = (size, position, rotation) ->
     mesh = new THREE.Mesh(geos.box, mats.ground)
@@ -217,30 +226,37 @@ populate = ->
     d = undefined
     i = max
     
-    while i--
+add_new_card = ->
+    
+    x = (rnd()-rnd()) *  10
+    z = (rnd()-rnd()) *  10
+    y = 120
+    
+    w =   50
+    h =   2
+    d =   90
 
-        x = (rnd()-rnd()) *  10
-        z = (rnd()-rnd()) *  10
-        y =  50+ i* 20
-        
-        w =   50
-        h =   2
-        d =   90
+    body = world.add(
+        type: 'box'
+        size: [w, h, d]
+        pos:  [x, y, z]
+        rot:  [(rnd()-rnd())*15,(rnd()-rnd())*45,(rnd()-rnd())*15]
+        move: true
+        world: world)
+    bodys.push body
 
-        bodys[i] = world.add(
-            type: 'box'
-            size: [w, h, d]
-            pos:  [x, y, z]
-            move: true
-            world: world)
+    mesh = new THREE.Mesh(geos.box, mats.box)
+    mesh.scale.set w, h, d
+    mesh.quaternion.copy body.getQuaternion()
 
-        meshs[i] = new (THREE.Mesh)(geos.box, mats.box)
-        meshs[i].scale.set w, h, d
-        
-        meshs[i].castShadow = false
-        meshs[i].receiveShadow = false
-        scene.add meshs[i]
-
+    # mesh.rotation.set (rnd()-rnd()),(rnd()-rnd()),(rnd()-rnd())
+    
+    console.log mesh
+    mesh.castShadow = false
+    mesh.receiveShadow = false
+    
+    meshs.push mesh
+    scene.add mesh
 
 updateOimoPhysics = ->
     
@@ -275,6 +291,7 @@ updateOimoPhysics = ->
                 x = (rnd()-rnd()) *  10
                 z = (rnd()-rnd()) *  10
                 y =  100 + rnd() * 1000
+
                 body.resetPosition x, y, z
                 body.resetRotation 0,0,0
         # sleep
