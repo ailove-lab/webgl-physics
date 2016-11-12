@@ -196,7 +196,7 @@ populate = ->
     
     phone = world.add
         size : [100, 20, 180]
-        pos  : [  0,  0,   0]
+        pos  : [  0, 20,   0]
         world: world
 
     # addStaticBox [  40, 40, 390], 
@@ -214,7 +214,7 @@ populate = ->
     
     # phone    
     addStaticBox [ 100, 20, 180], 
-                 [   0,  0,   0], 
+                 [   0, 20,   0], 
                  [   0,  0,   0]
         
     #add object
@@ -230,10 +230,10 @@ add_new_card = ->
     
     x = (rnd()-rnd()) *  10
     z = (rnd()-rnd()) *  10
-    y = 120
+    y = 200
     
     w =   50
-    h =   2
+    h =   10
     d =   90
 
     body = world.add(
