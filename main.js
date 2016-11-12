@@ -49,14 +49,13 @@ init = function() {
   if (n.match(/Android/i) || n.match(/webOS/i) || n.match(/iPhone/i) || n.match(/iPad/i) || n.match(/iPod/i) || n.match(/BlackBerry/i) || n.match(/Windows Phone/i)) {
     isMobile = true;
     antialias = false;
-    document.getElementById('MaxNumber').value = 200;
   }
   infos = document.getElementById('info');
   canvas = document.getElementById('canvas');
-  camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 5000);
+  camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, SC * 5000);
   camera.position.set(SC * 160, SC * 200, SC * 200);
   controls = new THREE.OrbitControls(camera, canvas);
-  controls.target.set(0, 20, 0);
+  controls.target.set(0, SC * 20, 0);
   controls.update();
   scene = new THREE.Scene;
   renderer = new THREE.WebGLRenderer({
@@ -69,11 +68,11 @@ init = function() {
   if (!isMobile) {
     scene.add(new THREE.AmbientLight(0x3D4143));
     light = new THREE.DirectionalLight(0xffffff, 1.4);
-    light.position.set(300, 1000, 500);
+    light.position.set(SC * 300, SC * 1000, SC * 500);
     light.target.position.set(0, 0, 0);
     light.castShadow = true;
-    light.shadowCameraNear = 500;
-    light.shadowCameraFar = 1600;
+    light.shadowCameraNear = SC * 500;
+    light.shadowCameraFar = SC * 1600;
     light.shadowCameraFov = 70;
     light.shadowBias = 0.0001;
     light.shadowDarkness = 0.7;
@@ -85,7 +84,7 @@ init = function() {
     renderer.shadowMap.type = THREE.PCFShadowMap;
   }
   buffgeoBack = new THREE.BufferGeometry;
-  buffgeoBack.fromGeometry(new THREE.IcosahedronGeometry(3000, 2));
+  buffgeoBack.fromGeometry(new THREE.IcosahedronGeometry(SC * 3000, 2));
   back = new THREE.Mesh(buffgeoBack, new THREE.MeshBasicMaterial({
     map: gradTexture([[0.75, 0.6, 0.4, 0.25], ['#008356', '#008356', '#FFFFFF', '#FFFFFF']]),
     side: THREE.BackSide,
@@ -107,11 +106,12 @@ init = function() {
   mats['ground'] = new THREE[materialType]({
     shininess: 10,
     color: 0x111111,
-    opacity: 1.0
+    transparent: true,
+    opacity: 0.5
   });
   window.addEventListener('resize', onWindowResize, false);
   document.addEventListener('keyup', onKey, false);
-  initOimoPhysics();
+  return initOimoPhysics();
 };
 
 main_loop = function() {
@@ -127,7 +127,6 @@ onWindowResize = function() {
 };
 
 onKey = function(e) {
-  console.log(e.key);
   if (e.key === " ") {
     return add_new_card();
   }
@@ -161,44 +160,36 @@ clearMesh = function() {
 
 initOimoPhysics = function() {
   world = new OIMO.World(1 / 60, 2, 32);
-  world.worldscale(1.0);
   return populate();
 };
 
 populate = function() {
-  var d, h, i, max, phone, table, w, x, y, z;
+  var max, phone, table;
   max = 20;
   clearMesh();
   world.clear();
   bodys = [];
   table = world.add({
-    size: [400, 80, 400],
-    pos: [0, -40, 0],
+    size: [SC * 400, SC * 80, SC * 400],
+    pos: [0, -SC * 40, 0],
     world: world
   });
   phone = world.add({
-    size: [100, 20, 180],
-    pos: [0, 20, 0],
+    size: [SC * 100, SC * 20, SC * 180],
+    pos: [0, SC * 20, 0],
     world: world
   });
-  addStaticBox([100, 20, 180], [0, 20, 0], [0, 0, 0]);
-  x = void 0;
-  y = void 0;
-  z = void 0;
-  w = void 0;
-  h = void 0;
-  d = void 0;
-  return i = max;
+  return addStaticBox([SC * 100, SC * 20, SC * 180], [0, SC * 20, 0], [0, 0, 0]);
 };
 
 add_new_card = function() {
   var body, d, h, mesh, w, x, y, z;
-  x = (rnd() - rnd()) * 10;
-  z = (rnd() - rnd()) * 10;
-  y = 200;
-  w = 50;
-  h = 2;
-  d = 90;
+  x = (rnd() - rnd()) * SC * 10;
+  z = (rnd() - rnd()) * SC * 10;
+  y = SC * 200;
+  w = SC * 50;
+  h = SC * 2;
+  d = SC * 90;
   body = world.add({
     type: 'box',
     size: [w, h, d],
@@ -212,7 +203,6 @@ add_new_card = function() {
   mesh = new THREE.Mesh(geos.box, mats.box);
   mesh.scale.set(w, h, d);
   mesh.quaternion.copy(body.getQuaternion());
-  console.log(mesh);
   mesh.castShadow = false;
   mesh.receiveShadow = false;
   meshs.push(mesh);
@@ -225,11 +215,6 @@ updateOimoPhysics = function() {
     return;
   }
   world.step();
-  x = void 0;
-  y = void 0;
-  z = void 0;
-  mesh = void 0;
-  body = void 0;
   i = bodys.length;
   while (i--) {
     body = bodys[i];
@@ -241,9 +226,9 @@ updateOimoPhysics = function() {
         mesh.material = mats.box;
       }
       if (mesh.position.y < -100) {
-        x = (rnd() - rnd()) * 10;
-        z = (rnd() - rnd()) * 10;
-        y = 100 + rnd() * 1000;
+        x = (rnd() - rnd()) * SC * 10;
+        z = (rnd() - rnd()) * SC * 10;
+        y = 100 + rnd() * SC * 1000;
         body.resetPosition(x, y, z);
         body.resetRotation(0, 0, 0);
       }
@@ -257,9 +242,7 @@ updateOimoPhysics = function() {
 };
 
 gravity = function(g) {
-  var nG;
-  nG = -1.0;
-  world.gravity = new OIMO.Vec3(0, nG, 0);
+  return world.gravity = new OIMO.Vec3(0, -g, 0);
 };
 
 gradTexture = function(color) {
