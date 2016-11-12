@@ -22,6 +22,8 @@ ToRad = 0.0174532925199432957
 type  = 1
 infos = undefined
 rnd   = Math.random
+SC    = 1.0
+
 
 init = ->
     
@@ -37,7 +39,7 @@ init = ->
     
     camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 5000)
     
-    camera.position.set 160, 200, 200
+    camera.position.set SC*160, SC*200, SC*200
     controls = new THREE.OrbitControls(camera, canvas)
     controls.target.set 0, 20, 0
     controls.update()
@@ -122,15 +124,18 @@ main_loop = ->
     requestAnimationFrame main_loop
 
 
+
 onWindowResize = ->
     camera.aspect = window.innerWidth / window.innerHeight
     camera.updateProjectionMatrix()
     renderer.setSize window.innerWidth, window.innerHeight
 
+
 onKey = (e)->
     console.log e.key
     if e.key is " "
         add_new_card()
+
 
 addStaticBox = (size, position, rotation) ->
     mesh = new THREE.Mesh(geos.box, mats.ground)
@@ -165,6 +170,7 @@ initOimoPhysics = ->
     # 2 : Sweep and prune , the default 
     # 3 : dynamic bounding volume tree
     world = new OIMO.World(1 / 60, 2, 32)
+    world.worldscale 1.0
     populate()
     #setInterval(updateOimoPhysics, 1000/60);
 
@@ -226,6 +232,7 @@ populate = ->
     d = undefined
     i = max
     
+
 add_new_card = ->
     
     x = (rnd()-rnd()) *  10
@@ -233,7 +240,7 @@ add_new_card = ->
     y = 200
     
     w =   50
-    h =   10
+    h =    2
     d =   90
 
     body = world.add(
@@ -243,7 +250,7 @@ add_new_card = ->
         rot:  [(rnd()-rnd())*15,(rnd()-rnd())*45,(rnd()-rnd())*15]
         move: true
         config: [
-            1,         # The density of the shape.
+            1.0,         # The density of the shape.
             0.4,       # The coefficient of friction of the shape.
             0.0,       # The coefficient of restitution of the shape.
             1,         # The bits of the collision groups to which the shape belongs.
@@ -264,6 +271,7 @@ add_new_card = ->
     
     meshs.push mesh
     scene.add mesh
+
 
 updateOimoPhysics = ->
     
@@ -310,7 +318,7 @@ updateOimoPhysics = ->
 
 
 gravity = (g) ->
-    nG = -10
+    nG = -1.0
     world.gravity = new (OIMO.Vec3)(0, nG, 0)
     return
 
