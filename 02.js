@@ -8,7 +8,7 @@ rnd = function() {
 };
 
 demo.addScene('test', function() {
-  var body, card_mat, colors, d, groundBody, groundShape, h, i, mass, phoneShape, phone_body, phone_card_concat, phone_mat, rc, results, s, shape, size, w, world;
+  var body, card_mat, clearing, colors, d, ground_body, ground_shp, h, i, mass, phoneShape, phone_body, phone_card_concat, phone_mat, rc, results, s, shape, size, w, world;
   world = demo.getWorld();
   world.gravity.set(0, 0, -10);
   world.broadphase = new CANNON.NaiveBroadphase;
@@ -18,21 +18,31 @@ demo.addScene('test', function() {
   phone_mat = new CANNON.Material();
   card_mat = new CANNON.Material();
   phone_card_concat = new CANNON.ContactMaterial(phone_mat, card_mat, {
-    friction: 0.0,
+    friction: 0.05,
     restitution: 0.0
   });
   world.addContactMaterial(phone_card_concat);
-  groundShape = new CANNON.Plane;
-  groundBody = new CANNON.Body({
+  ground_shp = new CANNON.Plane;
+  ground_body = new CANNON.Body({
     mass: 0
   });
-  groundBody.addShape(groundShape);
-  groundBody.position.set(-5, 0, 0);
-  world.addBody(groundBody);
+  ground_body.addShape(ground_shp);
+  ground_body.position.set(-5, 0, 0);
+  world.addBody(ground_body);
   demo.currentMaterial = new THREE.MeshLambertMaterial({
     color: 0x008356
   });
-  demo.addVisual(groundBody);
+  demo.addVisual(ground_body);
+  clearing = false;
+  ground_body.addEventListener("collide", function(e) {
+    if (!clearing) {
+      clearing = true;
+      return setTimeout((function() {
+        demo.restartCurrentScene();
+        return clearing = false;
+      }), 5000);
+    }
+  });
   mass = 1.0;
   w = 9.0;
   h = 5.0;

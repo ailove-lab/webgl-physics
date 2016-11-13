@@ -2,6 +2,7 @@ demo = new CANNON.Demo
 
 rnd = ->(Math.random()-Math.random())/2.0
 
+
 demo.addScene 'test', ->
 
     world = demo.getWorld()
@@ -15,18 +16,28 @@ demo.addScene 'test', ->
     # contact materials
     phone_mat = new CANNON.Material()
     card_mat  = new CANNON.Material()
-    phone_card_concat = new CANNON.ContactMaterial phone_mat, card_mat, { friction: 0.0, restitution: 0.0 }
+    phone_card_concat = new CANNON.ContactMaterial phone_mat, card_mat, { friction: 0.05, restitution: 0.0 }
     world.addContactMaterial phone_card_concat
 
-
     # ground plane
-    groundShape = new CANNON.Plane
-    groundBody = new CANNON.Body(mass: 0)
-    groundBody.addShape groundShape
-    groundBody.position.set -5, 0, 0
-    world.addBody groundBody
+    ground_shp = new CANNON.Plane
+    ground_body = new CANNON.Body(mass: 0)
+    ground_body.addShape ground_shp
+    ground_body.position.set -5, 0, 0
+    world.addBody ground_body
     demo.currentMaterial =  new THREE.MeshLambertMaterial( { color: 0x008356 } );
-    demo.addVisual groundBody
+    demo.addVisual ground_body
+    
+    clearing = false
+    ground_body.addEventListener "collide", (e)->
+        # world.remove e.body
+        # demo.removeVisual e.body
+        unless clearing
+            clearing = true
+            setTimeout (->
+                demo.restartCurrentScene()
+                clearing = false
+            ), 5000
 
     mass = 1.0
     w = 9.0
