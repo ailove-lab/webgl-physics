@@ -22,6 +22,9 @@ demo.addScene('test', function() {
   groundBody.addShape(groundShape);
   groundBody.position.set(-10, 0, 0);
   world.addBody(groundBody);
+  demo.currentMaterial = new THREE.MeshLambertMaterial({
+    color: 0x008356
+  });
   demo.addVisual(groundBody);
   mass = 1;
   w = 9.0;
@@ -36,7 +39,13 @@ demo.addScene('test', function() {
   phoneBody.addShape(phoneShape);
   phoneBody.position.set(0, 0, h / 5.0 * s);
   world.addBody(phoneBody);
+  demo.currentMaterial = new THREE.MeshLambertMaterial({
+    color: 0x111111
+  });
   demo.addVisual(phoneBody);
+  demo.currentMaterial = new THREE.MeshLambertMaterial({
+    color: 0xEEEEEE
+  });
   i = 0;
   results = [];
   while (i < 20) {

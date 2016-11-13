@@ -12,13 +12,19 @@ demo.addScene 'test', ->
     world.defaultContactMaterial.contactEquationStiffness = 5e6
     world.defaultContactMaterial.contactEquationRelaxation = 3
 
+
     # ground plane
     groundShape = new CANNON.Plane
+
     groundBody = new CANNON.Body(mass: 0)
     groundBody.addShape groundShape
     groundBody.position.set -10, 0, 0
     world.addBody groundBody
+    demo.currentMaterial =  new THREE.MeshLambertMaterial( { color: 0x008356 } );
     demo.addVisual groundBody
+
+    # groundShape.material = ground_material
+
 
     mass = 1
     w = 9.0
@@ -27,16 +33,19 @@ demo.addScene 'test', ->
     s = 0.5
 
     # phone
-    phoneBody  = new CANNON.Body mass: 0
 
+    phoneBody  = new CANNON.Body mass: 0
     size = new CANNON.Vec3 h*s*2.0, w*s*2.0, h/5.0*s
     phoneShape = new CANNON.Box size
     phoneBody.addShape phoneShape
     phoneBody.position.set 0, 0, h/5.0*s
     
     world.addBody phoneBody
+    demo.currentMaterial =  new THREE.MeshLambertMaterial( { color: 0x111111 } );
     demo.addVisual phoneBody
 
+
+    demo.currentMaterial =  new THREE.MeshLambertMaterial( { color: 0xEEEEEE } );
     i = 0
     while i < 20
 
