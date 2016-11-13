@@ -8,49 +8,64 @@ rnd = function() {
 };
 
 demo.addScene('test', function() {
-  var body, d, groundBody, groundShape, h, i, mass, phoneBody, phoneShape, results, s, shape, size, w, world;
+  var body, card_mat, colors, d, groundBody, groundShape, h, i, mass, phoneShape, phone_body, phone_card_concat, phone_mat, rc, results, s, shape, size, w, world;
   world = demo.getWorld();
-  world.gravity.set(0, 0, -5);
+  world.gravity.set(0, 0, -10);
   world.broadphase = new CANNON.NaiveBroadphase;
   world.solver.iterations = 50;
   world.defaultContactMaterial.contactEquationStiffness = 5e6;
   world.defaultContactMaterial.contactEquationRelaxation = 3;
+  phone_mat = new CANNON.Material();
+  card_mat = new CANNON.Material();
+  phone_card_concat = new CANNON.ContactMaterial(phone_mat, card_mat, {
+    friction: 0.0,
+    restitution: 0.0
+  });
+  world.addContactMaterial(phone_card_concat);
   groundShape = new CANNON.Plane;
   groundBody = new CANNON.Body({
     mass: 0
   });
   groundBody.addShape(groundShape);
-  groundBody.position.set(-10, 0, 0);
+  groundBody.position.set(-5, 0, 0);
   world.addBody(groundBody);
   demo.currentMaterial = new THREE.MeshLambertMaterial({
     color: 0x008356
   });
   demo.addVisual(groundBody);
-  mass = 1;
+  mass = 1.0;
   w = 9.0;
   h = 5.0;
   d = 0.1;
   s = 0.5;
-  phoneBody = new CANNON.Body({
-    mass: 0
+  phone_body = new CANNON.Body({
+    mass: 0,
+    material: phone_mat
   });
   size = new CANNON.Vec3(h * s * 2.0, w * s * 2.0, h / 5.0 * s);
   phoneShape = new CANNON.Box(size);
-  phoneBody.addShape(phoneShape);
-  phoneBody.position.set(0, 0, h / 5.0 * s);
-  world.addBody(phoneBody);
+  phone_body.addShape(phoneShape);
+  phone_body.position.set(0, 0, h / 5.0 * s);
+  world.addBody(phone_body);
   demo.currentMaterial = new THREE.MeshLambertMaterial({
     color: 0x111111
   });
-  demo.addVisual(phoneBody);
-  demo.currentMaterial = new THREE.MeshLambertMaterial({
-    color: 0xEEEEEE
-  });
+  demo.addVisual(phone_body);
   i = 0;
+  colors = [0x004777, 0xA31621, 0x95C623, 0x624763, 0xFFD166, 0xEEEEEE];
+  rc = function() {
+    var rci;
+    rci = Math.random() * colors.length | 0;
+    return demo.currentMaterial = new THREE.MeshLambertMaterial({
+      color: colors[rci]
+    });
+  };
   results = [];
-  while (i < 20) {
+  while (i < 50) {
+    rc();
     body = new CANNON.Body({
-      mass: mass
+      mass: mass,
+      material: card_mat
     });
     size = new CANNON.Vec3(h * s, w * s, d * s);
     shape = new CANNON.Box(size);
