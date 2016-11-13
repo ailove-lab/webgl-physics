@@ -22,7 +22,6 @@ ToRad = 0.0174532925199432957
 type  = 1
 infos = undefined
 rnd   = Math.random
-SC    = 1.0
 
 
 init = ->
@@ -36,11 +35,11 @@ init = ->
     infos  = document.getElementById('info'  )
     canvas = document.getElementById('canvas')
     
-    camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, SC*5000)
+    camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 1, 5000)
     
-    camera.position.set SC*160, SC*200, SC*200
+    camera.position.set 160, 200, 200
     controls = new THREE.OrbitControls(camera, canvas)
-    controls.target.set 0, SC*20, 0
+    controls.target.set 0, 20, 0
     controls.update()
     scene = new THREE.Scene
     
@@ -55,11 +54,11 @@ init = ->
     if !isMobile
         scene.add new THREE.AmbientLight(0x3D4143)
         light = new THREE.DirectionalLight(0xffffff, 1.4)
-        light.position.set SC*300, SC*1000, SC*500
+        light.position.set 300, 1000, 500
         light.target.position.set 0, 0, 0
         light.castShadow = true
-        light.shadowCameraNear = SC*500
-        light.shadowCameraFar = SC*1600
+        light.shadowCameraNear = 500
+        light.shadowCameraFar = 1600
         light.shadowCameraFov = 70
         light.shadowBias = 0.0001
         light.shadowDarkness = 0.7
@@ -75,7 +74,7 @@ init = ->
     
     # background
     buffgeoBack = new THREE.BufferGeometry
-    buffgeoBack.fromGeometry new THREE.IcosahedronGeometry(SC*3000, 2)
+    buffgeoBack.fromGeometry new THREE.IcosahedronGeometry(3000, 2)
     back = new THREE.Mesh(buffgeoBack, new THREE.MeshBasicMaterial(
         map: gradTexture([
             [0.75,0.6,0.4,0.25]
@@ -167,16 +166,14 @@ initOimoPhysics = ->
     # 1 : BruteForce
     # 2 : Sweep and prune , the default 
     # 3 : dynamic bounding volume tree
-    world = new OIMO.World(1 / 60, 2, 32)
-    # gravity 1.0
+    world = new OIMO.World(1 / 60, 2, 24)
+    gravity 10.0
     # world.worldscale 1000
     populate()
     #setInterval(updateOimoPhysics, 1000/60);
 
 
 populate = ->
-
-    max = 20
 
     # reset old
     clearMesh()
@@ -195,13 +192,13 @@ populate = ->
     #     world: world)
 
     table = world.add
-        size : [SC*400, SC*80,SC*400]
-        pos  : [  0,-SC*40,  0]
+        size : [400, 80,400]
+        pos  : [  0,-40,  0]
         world: world
     
     phone = world.add
-        size : [SC*100, SC*20, SC*180]
-        pos  : [  0, SC*20,   0]
+        size : [100, 20, 180]
+        pos  : [  0, 20,   0]
         world: world
 
     # addStaticBox [  40, 40, 390], 
@@ -218,34 +215,37 @@ populate = ->
     #              [  0,  0,   0]
     
     # phone    
-    addStaticBox [ SC*100, SC*20, SC*180], 
-                 [   0, SC*20,   0], 
+    addStaticBox [ 100, 20, 180], 
+                 [   0, 20,   0], 
                  [   0,  0,   0]
     
 
 add_new_card = ->
     
-    x = (rnd()-rnd()) * SC*10
-    z = (rnd()-rnd()) * SC*10
-    y = SC*200
+    x = (rnd()-rnd()) * 10
+    z = (rnd()-rnd()) * 10
+    y = 200
     
-    w = SC*50
-    h = SC* 2
-    d = SC*90
+    w = 50
+    h =  2
+    d = 90
 
+    
+    cfg = [
+        1.0,       # The density of the shape.
+        0.9,       # The coefficient of friction of the shape.
+        0.0,       # The coefficient of restitution of the shape.
+        1,         # The bits of the collision groups to which the shape belongs.
+        0xffffffff # The bits of the collision groups with which the shape collides.
+    ]
+    
     body = world.add(
         type: 'box'
         size: [w, h, d]
         pos:  [x, y, z]
         rot:  [(rnd()-rnd())*15,(rnd()-rnd())*45,(rnd()-rnd())*15]
         move: true
-        config: [
-            1.0,         # The density of the shape.
-            0.4,       # The coefficient of friction of the shape.
-            0.0,       # The coefficient of restitution of the shape.
-            1,         # The bits of the collision groups to which the shape belongs.
-            0xffffffff # The bits of the collision groups with which the shape collides.
-        ]
+        config: cfg
         world: world)
     bodys.push body
 
@@ -286,9 +286,9 @@ updateOimoPhysics = ->
             
             # reset position
             if mesh.position.y < -100
-                x = (rnd()-rnd()) * SC*   10
-                z = (rnd()-rnd()) * SC*   10
-                y =  100 + rnd()  * SC* 1000
+                x = (rnd()-rnd()) *    10
+                z = (rnd()-rnd()) *    10
+                y =  100 + rnd()  *  1000
 
                 body.resetPosition x, y, z
                 body.resetRotation 0, 0, 0
